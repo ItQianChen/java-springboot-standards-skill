@@ -1,4 +1,4 @@
-﻿# 标准包结构、六端 Controller 分离与数据流转规范
+# 标准包结构、六端 Controller 分离与数据流转规范
 
 本规范定义了 Spring Boot 单体与微服务工程中各层的目录职责、六端 Controller 物理隔离体系、Spring AI 智能体子模块结构以及领域模型（Domain/DTO/VO）的全生命周期流转规则。
 
