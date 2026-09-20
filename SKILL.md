@@ -1,15 +1,7 @@
 ---
 name: java-springboot-standards-skill
 description: >-
-  Spring Boot 单体、微服务、Spring AI 智能体与安全合规全栈开发规范通用 Agent Skill。适用于 Java、Spring Boot (2.7+/3.x)、Spring Cloud Alibaba、Spring AI、Spring Security 认证授权、安全合规审查、SQL 注入与 XSS 防御、敏感数据脱敏、Multi-Agent 路由智能体、@Tool 微服务工具链、SSE 结构化事件流 (@NoWrapper)、MyBatis-Plus、单体架构、微服务架构、六端 Controller 分层、数据流转 (Domain/DTO/VO)、统一异常与 600+ 错误码、分布式锁 (@Lock)、Seata 分布式事务、状态机 (StateMachine)、Redis+Lua 高并发扣减/抢单、Canal+ES 异构同步、XXL-Job 调度、Feign 跨服务契约、Javadoc 与序号化步骤业务注释规范等任务。
-license: MIT
-metadata:
-  author: Universal Agent Skill
-  version: 1.3.0
-  category: software-engineering
-compatibility: >-
-  Works on all platforms supporting the Agent Skills Open Standard (SKILL.md):
-  Claude Code, OpenAI Codex, Cursor, Windsurf, Cline, OpenCode, Roo Code, Trae, Kiro, Goose, Antigravity, and all LLM agents.
+  Java 与 Spring Boot (2.7+/3.x) 单体、微服务及企业级业务开发全栈规范。适用于新建、编写、重构或审查 Java/Spring Boot 后端业务代码、Controller/Service/Mapper 分层架构、数据流转 (Domain/DTO/VO)、参数校验与统一异常；涵盖 Spring Cloud Alibaba 微服务治理、Spring Security 认证授权与安全防御 (SQL注入/XSS/PII脱敏)、高并发扣减 (Redis+Lua)、分布式事务/锁 (Seata/@Lock)、状态机、MyBatis-Plus，以及 Spring AI 智能体与微服务联动工具链等任务。
 ---
 
 # /java-springboot-standards-skill — Spring Boot 单体、微服务、Spring AI 与安全合规开发规范
@@ -37,6 +29,7 @@ Agent 在为工程生成代码或包结构时，必须严格基于**当前项目
 ## 2. 触发场景 (Trigger)
 
 当用户或 Agent 在处理以下任何场景时必须激活本 Skill：
+* **日常业务与接口开发**：新建、编写、重构或审查 Controller、Service、Mapper，实现参数校验、异常处理、六端路由划分（`agency`, `consumer`, `inner`, `open`, `operation`, `worker`）及 DTO/VO 数据流转。
 * **架构设计与脚手架搭建**：创建或重构 Spring Boot 单体模块、Maven 多模块父子工程、通用 Starter（`framework-*`）、Feign API 契约层。
 * **安全防护与合规审查**：配置 Spring Security、JWT 身份认证、`@PreAuthorize` 方法级鉴权、SQL 注入与 XSS 防御、敏感数据与日志脱敏（PII）、接口限流（Rate Limiting）、上线前安全审查。
 * **Spring AI 与智能体开发**：构建 Multi-Agent 体系（`RouteAgent`, `AbstractAgent`, 领域子智能体）、编写微服务联动工具（`@Tool` 注入 Feign Client）、实现 SSE 结构化流式响应（`Flux<ChatEventVO>` + `@NoWrapper`）、配置集群会话记忆（`RedisChatMemory`）与 Token 优化 Advisor。
