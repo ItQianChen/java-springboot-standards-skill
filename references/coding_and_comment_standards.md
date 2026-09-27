@@ -24,6 +24,71 @@
 
 在已鉴权接口中，当前登录用户的主体信息由网关解析并在拦截器层注入 `UserContext` 线程局部变量（ThreadLocal）。
 
+### 2.0 上下文定义、填充与清理
+
+```java
+public final class UserContext {
+
+    private static final ThreadLocal<CurrentUserInfo> CONTEXT = new ThreadLocal<>();
+
+    private UserContext() {
+        // 工具类禁止实例化
+    }
+
+    public static void setUser(CurrentUserInfo user) {
+        CONTEXT.set(user);
+    }
+
+    public static CurrentUserInfo currentUser() {
+        return CONTEXT.get();
+    }
+
+    public static Long currentUserId() {
+        CurrentUserInfo user = currentUser();
+        return user == null ? null : user.getId();
+    }
+
+    public static Integer getUserType() {
+        CurrentUserInfo user = currentUser();
+        return user == null ? null : user.getUserType();
+    }
+
+    public static void clear() {
+        CONTEXT.remove();
+    }
+}
+```
+
+填充与清理必须成对出现在同一条 MVC 拦截链中。单体应用可在 `preHandle` 解析 Session/JWT 并写入；网关后的微服务从 `X-User-Id`、`X-User-Type` 等可信 Header 构建：
+
+```java
+@Component
+public class UserContextInterceptor implements HandlerInterceptor {
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        CurrentUserInfo user = parseTrustedUser(request);
+        UserContext.setUser(user);
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                Object handler, Exception ex) {
+        // Tomcat 复用工作线程；不 remove 会把上一个请求的用户带给下一个请求
+        UserContext.clear();
+    }
+}
+```
+
+生命周期约束：
+
+1. `setUser` 只能由鉴权 Filter/Interceptor 或框架上下文组件调用，业务 Controller/Service 禁止写入或覆盖。
+2. 清理必须放在 `afterCompletion` 或 `finally`，保证正常返回、业务异常、鉴权拦截后都执行。
+3. 异步线程、`@Async`、线程池、CompletableFuture 不自动继承 ThreadLocal；进入异步逻辑前显式复制用户快照，任务结束后同步清理。
+4. WebFlux/Reactor 不得使用该 ThreadLocal 模式，应使用 Reactor Context 或框架安全上下文。
+5. 定时任务、MQ 消费者、系统任务没有请求上下文时，使用明确系统身份，不得伪造用户身份。
+
 ### 2.1 规范要求
 1. **绝对禁止**在 `@RequestBody`、`@RequestParam` 或 `@PathVariable` 中接收当前用户的 `userId`。
 2. 业务代码统一通过 `UserContext` 安全获取当前登录人属性：

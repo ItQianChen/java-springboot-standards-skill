@@ -1,7 +1,7 @@
 ---
 name: java-springboot-standards-skill
 description: >-
-  Java 与 Spring Boot (2.7+/3.x) 单体、微服务及企业级业务开发全栈规范。适用于新建、编写、重构或审查 Java/Spring Boot 后端业务代码、Controller/Service/Mapper 分层架构、数据流转 (Domain/DTO/VO)、参数校验与统一异常；涵盖 Spring Cloud Alibaba 微服务治理、Spring Security 认证授权与安全防御 (SQL注入/XSS/PII脱敏)、高并发扣减 (Redis+Lua)、分布式事务/锁 (Seata/@Lock)、状态机、MyBatis-Plus，以及 Spring AI 智能体与微服务联动工具链等任务。
+  Java Spring Boot 2.7+/3.x 单体与微服务后端的新建、实现、重构和审查规范。适用于 Controller/Service/Mapper 分层、DTO/VO、参数校验、统一异常、MyBatis/MyBatis-Plus、联表查询、N+1 治理、分页、安全脱敏、事务并发、状态机和 Spring Cloud 中间件；Spring AI 仅在项目已有依赖或用户明确提出 AI/智能体/RAG/工具调用需求时适用。不适用于非 Spring Java 工具、前端页面、纯运维部署和数据库 DBA 专项问题。
 ---
 
 # /java-springboot-standards-skill — Spring Boot 单体、微服务、Spring AI 与安全合规开发规范
@@ -29,14 +29,11 @@ Agent 在为工程生成代码或包结构时，必须严格基于**当前项目
 ## 2. 触发场景 (Trigger)
 
 当用户或 Agent 在处理以下任何场景时必须激活本 Skill：
-* **日常业务与接口开发**：新建、编写、重构或审查 Controller、Service、Mapper，实现参数校验、异常处理、六端路由划分（`agency`, `consumer`, `inner`, `open`, `operation`, `worker`）及 DTO/VO 数据流转。
-* **架构设计与脚手架搭建**：创建或重构 Spring Boot 单体模块、Maven 多模块父子工程、通用 Starter（`framework-*`）、Feign API 契约层。
-* **安全防护与合规审查**：配置 Spring Security、JWT 身份认证、`@PreAuthorize` 方法级鉴权、SQL 注入与 XSS 防御、敏感数据与日志脱敏（PII）、接口限流（Rate Limiting）、上线前安全审查。
-* **Spring AI 与智能体开发**：构建 Multi-Agent 体系（`RouteAgent`, `AbstractAgent`, 领域子智能体）、编写微服务联动工具（`@Tool` 注入 Feign Client）、实现 SSE 结构化流式响应（`Flux<ChatEventVO>` + `@NoWrapper`）、配置集群会话记忆（`RedisChatMemory`）与 Token 优化 Advisor。
-* **接口与分层开发**：编写 Controller、Service、Mapper、Domain/DTO/VO，划分六端路由（`agency`, `consumer`, `inner`, `open`, `operation`, `worker`）。
-* **上下文与统一响应**：处理用户登录态传递（`UserContext`）、统一响应自包装（`Result<T>`、`PageResult<T>`）、参数校验（Validator / `@EnumValid`）。
-* **异常与错误码**：处理业务异常、操作拦截、600+ 业务错误码定义（`ErrorInfo.Code`）。
-* **复杂中间件与高并发**：实现分布式锁（`@Lock` / Redisson）、分布式事务（Seata `@GlobalTransactional`）、订单状态机（`StateMachine`）、Redis + Lua 原子扣减/抢单、Canal + ElasticSearch 实时同步、XXL-Job 定时调度。
+* **Spring Boot 架构与分层接口开发**：创建或重构单体模块、Maven 多模块工程、通用 Starter、Feign 契约层，以及编写 Controller、Service、Mapper、Domain/DTO/VO、参数校验、统一响应与异常、六端路由划分。
+* **数据建模与数据流转**：设计实体字段、审计字段、Entity/DTO/VO 契约、分页查询、MyBatis/MyBatis-Plus 映射、联表查询、多表装配、N+1 查询治理、状态数据、用户归属和订单快照等数据规范。
+* **安全防护与合规审查**：配置 Spring Security、JWT 身份认证、`@PreAuthorize` 方法级鉴权、SQL 注入与 XSS 防御、PII 数据脱敏、接口限流、上线前安全审查。
+* **事务、并发与中间件治理**：处理本地/分布式事务、Redis + Lua 原子扣减、Redisson 分布式锁、状态机、Canal + ElasticSearch 同步、RabbitMQ、XXL-Job 等 Spring Cloud 组件。
+* **Spring AI 与智能体开发**：仅在项目已有 Spring AI 依赖或用户明确提出 AI/智能体/RAG/工具调用需求时，构建 Multi-Agent、`@Tool` 微服务工具链、SSE 流式响应、RedisChatMemory 与 Token 优化 Advisor。
 * **代码审查与注释规范**：为 Java 代码补充/审查 Javadoc、消除注释噪音、添加序号化分步业务注释（`// 1. 数据校验` ... `// 2. 状态机流转`）。
 
 ---
@@ -123,6 +120,7 @@ com.<company>.<project/service>
 10. **高并发防御**：涉及库存、抢单、抢券等临界资源，必须使用 Redis + Lua 保证原子性或通过 Redisson `@Lock` 控制并发。
 
 编码规范、命名规则与 Javadoc 详见 ➔ [references/coding_and_comment_standards.md](references/coding_and_comment_standards.md)。  
+数据建模、数据流转、分页、MyBatis 映射、状态与敏感数据规范详见 ➔ [references/data_standards.md](references/data_standards.md)。  
 安全防护、认证授权与合规审查详见 ➔ [references/security_and_compliance.md](references/security_and_compliance.md)。  
 高级中间件、Spring AI 模式与实战代码范式详见 ➔ [references/patterns_and_middleware.md](references/patterns_and_middleware.md)。
 
@@ -135,6 +133,8 @@ com.<company>.<project/service>
 - [ ] **按需裁剪**：如果是普通单体/微服务（无 AI 需求），是否严格杜绝了 AI 相关的无用包和多余依赖？
 - [ ] **分层定位**：Controller 是否放入正确的端目录（`agency/consumer/inner/open/operation/worker`）？
 - [ ] **模型防漏**：是否杜绝了 `domain.Entity` 暴露给前端或跨服务 Feign 接口？
+- [ ] **数据规范**：字段类型、审计填充、分页上限、SQL 参数绑定、状态受控变更、用户归属条件、敏感数据脱敏是否满足 [references/data_standards.md](references/data_standards.md)？
+- [ ] **联表与 N+1**：是否杜绝循环逐条查询 Mapper/RPC/Redis？JOIN fan-out、分页口径、批量 `IN` 上限、索引和 `EXPLAIN` 执行计划是否已审查？
 - [ ] **上下文安全**：是否存在请求参数接收 `userId` 的漏洞？是否使用 `UserContext` 获取当前用户？
 - [ ] **安全与防注入**：是否杜绝了 SQL 字符串拼接（`${}`）？敏感端点是否具备 `@PreAuthorize` 守卫？
 - [ ] **数据脱敏**：出参与日志中是否对手机号、身份证、密码等敏感信息进行了脱敏？
